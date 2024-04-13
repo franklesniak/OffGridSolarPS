@@ -70,4 +70,14 @@ For example, a `DateTimeWorstCaseSolarPowerGeneration24HourPeriod` of `1/7/2019 
 
 ## Remarks
 
-For less critical systems, You may find it beneficial to compare the analysis of the selected "USA & Americas (30, 60 min / 4km / 1998-20xx)" to the data from "USA & Americas - Typical Meteorological Year", as the latter may show a less-pessimistic.
+For less critical systems, You may find it beneficial to compare the analysis of the selected model with that of a "Typical Meteorological Year".
+For example, you might compare "USA & Americas (30, 60 min / 4km / 1998-20xx)" to the data from "USA & Americas - Typical Meteorological Year", as the latter may show a less pessimistic.
+
+For non-US/non-Americas locations, you might have luck exporting the following models:
+
+- Meteosat Prime Meridian: Africa and Europe
+- South Asia (60min / 10km / 2000-2014)
+- Asia, Australia & Pacific (10, 30, 60min / 2km / 2016-2020) combined with Asia, Australia & Pacific (30, 60min / 4km / 2011-2015)
+
+However, the author has not tested these datasets.
+If you try them and have success, please report them!

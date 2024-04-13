@@ -1,5 +1,5 @@
 # Measure-OffGridSolarStatistics.ps1
-# Version: 1.0.20240413.0
+# Version: 1.0.20240413.1
 
 <#
 .SYNOPSIS
@@ -414,19 +414,19 @@ $listPSObjectNSRDBData | Sort-Object -Property DateTime | ForEach-Object {
 
 $psobjectSolarStats = New-Object -TypeName PSObject
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarPowerGeneration24HourPeriod' -Value $intMinGHI24HourPeriod
-$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarDays24HourPeriod' -Value ([double]($intMinGHI24HourPeriod / 1 / 1000))
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours24HourPeriod' -Value ([double]($intMinGHI24HourPeriod / 1 / 1000))
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration24HourPeriod' -Value $datetimeMinGHI24HourPeriod
 
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarPowerGeneration3DayPeriod' -Value $intMinGHI3DayPeriod
-$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarDays3DayPeriod' -Value ([double]($intMinGHI3DayPeriod / 3 / 1000))
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours3DayPeriod' -Value ([double]($intMinGHI3DayPeriod / 3 / 1000))
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration3DayPeriod' -Value $datetimeMinGHI3DayPeriod
 
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarPowerGeneration5DayPeriod' -Value $intMinGHI5DayPeriod
-$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarDays5DayPeriod' -Value ([double]($intMinGHI5DayPeriod / 5 / 1000))
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours5DayPeriod' -Value ([double]($intMinGHI5DayPeriod / 5 / 1000))
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration5DayPeriod' -Value $datetimeMinGHI5DayPeriod
 
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarPowerGeneration7DayPeriod' -Value $intMinGHI7DayPeriod
-$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarDays7DayPeriod' -Value ([double]($intMinGHI7DayPeriod / 7 / 1000))
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours7DayPeriod' -Value ([double]($intMinGHI7DayPeriod / 7 / 1000))
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration7DayPeriod' -Value $datetimeMinGHI7DayPeriod
 
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseAverageTemperature24HourPeriod' -Value $doubleMinAverageTemperature24HourPeriod

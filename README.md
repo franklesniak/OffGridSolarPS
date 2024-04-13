@@ -70,8 +70,7 @@ For example, a `DateTimeWorstCaseSolarPowerGeneration24HourPeriod` of `1/7/2019 
 
 ## Remarks
 
-For less critical systems, You may find it beneficial to compare the analysis of the selected model with that of a "Typical Meteorological Year".
-For example, you might compare "USA & Americas (30, 60 min / 4km / 1998-20xx)" to the data from "USA & Americas - Typical Meteorological Year", as the latter may show a less pessimistic.
+### Non-US/Non-Americas Locations
 
 For non-US/non-Americas locations, you might have luck exporting the following models:
 
@@ -81,3 +80,40 @@ For non-US/non-Americas locations, you might have luck exporting the following m
 
 However, the author has not tested these datasets.
 If you try them and have success, please report them!
+
+### Using Data from a "Typical Meteorological Year" Instead of All Years
+
+For less critical systems, You may find it beneficial to compare the analysis of the selected model with that of a "Typical Meteorological Year".
+For example, you might compare "USA & Americas (30, 60 min / 4km / 1998-20xx)" to the data from "USA & Americas - Typical Meteorological Year", as the latter may show a less pessimistic.
+
+Here is an example of the author's "Typical Meteorological Year" dataset:
+
+```powershell
+PS C:\Users\flesniak> $results2 = & '.\Github\OffGridSolarPS\Measure-OffGridSolarStatistics.ps1' -PathToNSRDBDataFolder 'C:\Users\flesniak\Downloads\644d971fabe7cbb9a7924181c1386e10' -IgnoreYearSpecifiedInNSRDBData
+PS C:\Users\flesniak> $results2
+
+WorstCaseSolarPowerGeneration24HourPeriod         : 114
+WorstCasePeakSolarHours24HourPeriod               : 0.114
+DateTimeWorstCaseSolarPowerGeneration24HourPeriod : 1/7/2024 8:30:00 PM
+WorstCaseSolarPowerGeneration3DayPeriod           : 1377
+WorstCasePeakSolarHours3DayPeriod                 : 0.459
+DateTimeWorstCaseSolarPowerGeneration3DayPeriod   : 12/8/2024 9:30:00 PM
+WorstCaseSolarPowerGeneration5DayPeriod           : 3552
+WorstCasePeakSolarHours5DayPeriod                 : 0.7104
+DateTimeWorstCaseSolarPowerGeneration5DayPeriod   : 11/22/2024 4:30:00 PM
+WorstCaseSolarPowerGeneration7DayPeriod           : 6485
+WorstCasePeakSolarHours7DayPeriod                 : 0.926428571428571
+DateTimeWorstCaseSolarPowerGeneration7DayPeriod   : 11/22/2024 9:30:00 PM
+WorstCaseAverageTemperature24HourPeriod           : -27.2458333333333
+DateTimeWorstCaseAverageTemperature24HourPeriod   : 1/31/2024 11:30:00 AM
+WorstCaseAverageTemperature3DayPeriod             : -21.5986111111111
+DateTimeWorstCaseAverageTemperature3DayPeriod     : 1/31/2024 11:30:00 PM
+WorstCaseAverageTemperature5DayPeriod             : -17.155
+DateTimeWorstCaseAverageTemperature5DayPeriod     : 1/31/2024 11:30:00 PM
+WorstCaseAverageTemperature7DayPeriod             : -16.6482142857143
+DateTimeWorstCaseAverageTemperature7DayPeriod     : 1/31/2024 11:30:00 PM
+```
+
+Note the inclusion of the `-IgnoreYearSpecifiedInNSRDBData` parameter in the command.
+
+As you can see, the results of a typical year are more optimistic.

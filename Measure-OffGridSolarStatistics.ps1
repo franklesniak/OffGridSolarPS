@@ -1,3 +1,6 @@
+# Measure-OffGridSolarStatistics.ps1
+# Version: 1.0.20240413.0
+
 <#
 .SYNOPSIS
     Analyzes solar and temperature data from https://nsrdb.nrel.gov/data-viewer to help
@@ -116,7 +119,13 @@ function Get-PSVersion {
 
 $versionPS = Get-PSVersion
 
-$arrNSRDBDataFilePaths = @(Get-ChildItem -Path $PathToNSRDBDataFolder -Filter '*.csv' | Sort-Object -Property Name | ForEach-Object { $_.FullName })
+$arrNSRDBDataFilePaths = @(Get-ChildItem -Path $PathToNSRDBDataFolder -Filter '*.csv' |
+        Sort-Object -Property Name |
+        ForEach-Object {
+            if ($_.Name -notlike '*_fixed.csv') {
+                $_.FullName
+            }
+        })
 
 # Remove the leading two lines from each file
 # Use [System.IO.File]::ReadAllLines() since it performs better than Get-Content
@@ -130,7 +139,7 @@ $arrRevisedFilePaths = @($arrNSRDBDataFilePaths | ForEach-Object {
         $arrNSRDBData = $arrNSRDBData[2..($arrNSRDBData.Length - 1)]
         [System.IO.File]::WriteAllLines($strRevisedFilePath, $arrNSRDBData)
 
-        return $strRevisedFilePath
+        $strRevisedFilePath
     })
 
 # Create the list to store received input data
@@ -146,10 +155,37 @@ if ($versionPS -ge ([version]'6.0')) {
 $calendarGregorian = New-Object -TypeName System.Globalization.GregorianCalendar
 $datetimekindUTC = [System.DateTimeKind]::Utc
 
+#region Collect Stats/Objects Needed for Writing Progress ##########################
+$intProgressReportingFrequency = 1000
+$intTotalItems = [int](($arrRevisedFilePaths.Count) * 365.2425 * 24) # May not be exactly correct, but we'll roll with it
+$strProgressActivity = 'Importing data from NSRDB files into memory'
+$strProgressStatus = 'Processing'
+$strProgressCurrentOperationPrefix = 'Processing item'
+$timedateStartOfLoop = Get-Date
+# Create a queue for storing lagging timestamps for ETA calculation
+$queueLaggingTimestamps = New-Object System.Collections.Queue
+$queueLaggingTimestamps.Enqueue($timedateStartOfLoop)
+#endregion Collect Stats/Objects Needed for Writing Progress ##########################
+
+$intCounterLoop = 0
 foreach ($strRevisedFilePath in $arrRevisedFilePaths) {
     $arrNSRDBData = Import-Csv -Path $strRevisedFilePath
 
     foreach ($objNSRDBData in $arrNSRDBData) {
+        #region Report Progress ########################################################
+        $intCurrentItemNumber = $intCounterLoop + 1 # Forward direction for loop
+        if ((($intCurrentItemNumber -ge ($intProgressReportingFrequency * 3)) -and ($intCurrentItemNumber % $intProgressReportingFrequency -eq 0)) -or ($intCurrentItemNumber -eq $intTotalItems)) {
+            # Create a progress bar after the first (3 x $intProgressReportingFrequency) items have been processed
+            $timeDateLagging = $queueLaggingTimestamps.Dequeue()
+            $datetimeNow = Get-Date
+            $timespanTimeDelta = $datetimeNow - $timeDateLagging
+            $intNumberOfItemsProcessedInTimespan = $intProgressReportingFrequency * ($queueLaggingTimestamps.Count + 1)
+            $doublePercentageComplete = ($intCurrentItemNumber - 1) / $intTotalItems
+            $intItemsRemaining = $intTotalItems - $intCurrentItemNumber + 1
+            Write-Progress -Activity $strProgressActivity -Status $strProgressStatus -PercentComplete ($doublePercentageComplete * 100) -CurrentOperation ($strProgressCurrentOperationPrefix + ' ' + $intCurrentItemNumber + ' of ' + $intTotalItems + ' (' + [string]::Format('{0:0.00}', ($doublePercentageComplete * 100)) + '%)') -SecondsRemaining (($timespanTimeDelta.TotalSeconds / $intNumberOfItemsProcessedInTimespan) * $intItemsRemaining)
+        }
+        #endregion Report Progress ########################################################
+
         $psobjectComputedNSRDBData = New-Object -TypeName PSObject
 
         $arrDateTimeConstructorParams = @(
@@ -176,8 +212,21 @@ foreach ($strRevisedFilePath in $arrRevisedFilePaths) {
         } else {
             [void]($listPSObjectNSRDBData.Add($psobjectComputedNSRDBData))
         }
+
+        #region Post-Loop Progress Reporting ###########################################
+        if ($intCurrentItemNumber -eq $intTotalItems) {
+            Write-Progress -Activity $strProgressActivity -Status $strProgressStatus -Completed
+        }
+        if ($intCounterLoop % $intProgressReportingFrequency -eq 0) {
+            # Add lagging timestamp to queue
+            $queueLaggingTimestamps.Enqueue((Get-Date))
+        }
+        # Increment counter
+        $intCounterLoop++
+        #endregion Post-Loop Progress Reporting ###########################################
     }
 }
+Write-Progress -Activity $strProgressActivity -Status $strProgressStatus -Completed # Kill the progress bar just in case
 
 $intMinGHI24HourPeriod = [int]::MaxValue
 $datetimeMinGHI24HourPeriod = New-Object -TypeName 'System.DateTime'

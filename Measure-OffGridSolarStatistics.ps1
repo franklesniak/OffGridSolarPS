@@ -1,5 +1,5 @@
 # Measure-OffGridSolarStatistics.ps1
-# Version: 1.0.20240413.1
+# Version: 1.1.20240413.0
 
 <#
 .SYNOPSIS
@@ -24,6 +24,11 @@
 
 .PARAMETER PathToNSRDBDataFolder
     Path to the folder containing the extracted NSRDB data files.
+
+.PARAMETER IgnoreYearSpecifiedInNSRDBData
+    If specified, the script will ignore the year specified in the NSRDB data files.
+    This is useful if you are using a "Typical Meteorological Year" dataset as that
+    dataset combines multiple years of data into a single file.
 
 .OUTPUTS
     A PSObject containing the calculated statistics.
@@ -59,7 +64,8 @@
 
 [CmdletBinding()]
 param (
-    [parameter(Mandatory = $true)][ValidateScript({ Test-Path $_ -PathType Container })][string]$PathToNSRDBDataFolder
+    [parameter(Mandatory = $true)][ValidateScript({ Test-Path $_ -PathType Container })][string]$PathToNSRDBDataFolder,
+    [switch]$IgnoreYearSpecifiedInNSRDBData
 )
 
 #region Functions ##################################################################
@@ -118,6 +124,10 @@ function Get-PSVersion {
 #endregion Functions ##################################################################
 
 $versionPS = Get-PSVersion
+$boolIgnoreYearSpecifiedInNSRDBData = $false
+if ($IgnoreYearSpecifiedInNSRDBData.IsPresent) {
+    $boolIgnoreYearSpecifiedInNSRDBData = $true
+}
 
 $arrNSRDBDataFilePaths = @(Get-ChildItem -Path $PathToNSRDBDataFolder -Filter '*.csv' |
         Sort-Object -Property Name |
@@ -154,6 +164,7 @@ if ($versionPS -ge ([version]'6.0')) {
 
 $calendarGregorian = New-Object -TypeName System.Globalization.GregorianCalendar
 $datetimekindUTC = [System.DateTimeKind]::Utc
+$intCurrentYear = (Get-Date).Year
 
 #region Collect Stats/Objects Needed for Writing Progress ##########################
 $intProgressReportingFrequency = 1000
@@ -188,8 +199,14 @@ foreach ($strRevisedFilePath in $arrRevisedFilePaths) {
 
         $psobjectComputedNSRDBData = New-Object -TypeName PSObject
 
+        if ($boolIgnoreYearSpecifiedInNSRDBData) {
+            $intYear = $intCurrentYear
+        } else {
+            $intYear = [int]($objNSRDBData.Year)
+        }
+
         $arrDateTimeConstructorParams = @(
-            $objNSRDBData.Year,
+            $intYear,
             $objNSRDBData.Month,
             $objNSRDBData.Day,
             $objNSRDBData.Hour,

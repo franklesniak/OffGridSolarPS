@@ -40,16 +40,16 @@ PS C:\Users\flesniak> $results = & '.\Github\OffGridSolarPS\Measure-OffGridSolar
 PS C:\Users\flesniak> $results
 
 WorstCaseSolarPowerGeneration24HourPeriod         : 114
-WorstCasePeakSolarHours24HourPeriod                : 0.114
+WorstCasePeakSolarHours24HourPeriod               : 0.114
 DateTimeWorstCaseSolarPowerGeneration24HourPeriod : 1/7/2019 8:30:00 PM
 WorstCaseSolarPowerGeneration3DayPeriod           : 893
-WorstCasePeakSolarHours3DayPeriod                  : 0.297666666666667
+WorstCasePeakSolarHours3DayPeriod                 : 0.297666666666667
 DateTimeWorstCaseSolarPowerGeneration3DayPeriod   : 12/25/2009 2:30:00 PM
 WorstCaseSolarPowerGeneration5DayPeriod           : 1779
-WorstCasePeakSolarHours5DayPeriod                  : 0.3558
+WorstCasePeakSolarHours5DayPeriod                 : 0.3558
 DateTimeWorstCaseSolarPowerGeneration5DayPeriod   : 12/26/2009 7:30:00 PM
 WorstCaseSolarPowerGeneration7DayPeriod           : 2763
-WorstCasePeakSolarHours7DayPeriod                  : 0.394714285714286
+WorstCasePeakSolarHours7DayPeriod                 : 0.394714285714286
 DateTimeWorstCaseSolarPowerGeneration7DayPeriod   : 12/27/2009 5:30:00 PM
 WorstCaseAverageTemperature24HourPeriod           : -27.2458333333333
 DateTimeWorstCaseAverageTemperature24HourPeriod   : 1/31/2019 11:30:00 AM

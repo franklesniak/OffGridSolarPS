@@ -1,5 +1,5 @@
 # Measure-OffGridSolarStatistics.ps1
-# Version: 1.1.20240413.0
+# Version: 1.2.20240415.0
 
 <#
 .SYNOPSIS
@@ -13,14 +13,20 @@
     - Worst case solar power generation (rolling three-day period, in watts per square meter)
     - Worst case solar power generation (rolling five-day period, in watts per square meter)
     - Worst case solar power generation (rolling seven-day period, in watts per square meter)
+    - Worst case solar power generation (rolling ten-day period, in watts per square meter)
+    - Worst case solar power generation (rolling fourteen-day period, in watts per square meter)
     - Worst case daily average "peak solar hours" (measured over a rolling 24-hour period, in hours)
     - Worst case daily average "peak solar hours" (measured over a rolling three-day period, in hours)
     - Worst case daily average "peak solar hours" (measured over a rolling five-day period, in hours)
     - Worst case daily average "peak solar hours" (measured over a rolling seven-day period, in hours)
+    - Worst case daily average "peak solar hours" (measured over a rolling ten-day period, in hours)
+    - Worst case daily average "peak solar hours" (measured over a rolling fourteen-day period, in hours)
     - Worst case daily average temperature (measured over a rolling 24-hour period, in degrees Celsius)
     - Worst case daily average temperature (measured over a rolling three-day period, in degrees Celsius)
     - Worst case daily average temperature (measured over a rolling five-day period, in degrees Celsius)
     - Worst case daily average temperature (measured over a rolling seven-day period, in degrees Celsius)
+    - Worst case daily average temperature (measured over a rolling ten-day period, in degrees Celsius)
+    - Worst case daily average temperature (measured over a rolling fourteen-day period, in degrees Celsius)
 
 .PARAMETER PathToNSRDBDataFolder
     Path to the folder containing the extracted NSRDB data files.
@@ -253,6 +259,10 @@ $intMinGHI5DayPeriod = [int]::MaxValue
 $datetimeMinGHI5DayPeriod = New-Object -TypeName 'System.DateTime'
 $intMinGHI7DayPeriod = [int]::MaxValue
 $datetimeMinGHI7DayPeriod = New-Object -TypeName 'System.DateTime'
+$intMinGHI10DayPeriod = [int]::MaxValue
+$datetimeMinGHI10DayPeriod = New-Object -TypeName 'System.DateTime'
+$intMinGHI14DayPeriod = [int]::MaxValue
+$datetimeMinGHI14DayPeriod = New-Object -TypeName 'System.DateTime'
 
 $doubleMinAverageTemperature24HourPeriod = [double]::MaxValue
 $datetimeMinAverageTemperature24HourPeriod = New-Object -TypeName 'System.DateTime'
@@ -262,16 +272,24 @@ $doubleMinAverageTemperature5DayPeriod = [double]::MaxValue
 $datetimeMinAverageTemperature5DayPeriod = New-Object -TypeName 'System.DateTime'
 $doubleMinAverageTemperature7DayPeriod = [double]::MaxValue
 $datetimeMinAverageTemperature7DayPeriod = New-Object -TypeName 'System.DateTime'
+$doubleMinAverageTemperature10DayPeriod = [double]::MaxValue
+$datetimeMinAverageTemperature10DayPeriod = New-Object -TypeName 'System.DateTime'
+$doubleMinAverageTemperature14DayPeriod = [double]::MaxValue
+$datetimeMinAverageTemperature14DayPeriod = New-Object -TypeName 'System.DateTime'
 
 # Create queues to store the last n-hours/days of data
 $queueGHI24HourPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[int]'
 $queueGHI3DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[int]'
 $queueGHI5DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[int]'
 $queueGHI7DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[int]'
+$queueGHI10DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[int]'
+$queueGHI14DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[int]'
 $queueTemperature24HourPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[double]'
 $queueTemperature3DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[double]'
 $queueTemperature5DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[double]'
 $queueTemperature7DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[double]'
+$queueTemperature10DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[double]'
+$queueTemperature14DayPeriod = New-Object -TypeName 'System.Collections.Generic.Queue[double]'
 
 #region Collect Stats/Objects Needed for Writing Progress ##########################
 $intProgressReportingFrequency = 300
@@ -313,10 +331,14 @@ $listPSObjectNSRDBData | Sort-Object -Property DateTime | ForEach-Object {
     $queueGHI3DayPeriod.Enqueue($intGHI)
     $queueGHI5DayPeriod.Enqueue($intGHI)
     $queueGHI7DayPeriod.Enqueue($intGHI)
+    $queueGHI10DayPeriod.Enqueue($intGHI)
+    $queueGHI14DayPeriod.Enqueue($intGHI)
     $queueTemperature24HourPeriod.Enqueue($doubleTemperature)
     $queueTemperature3DayPeriod.Enqueue($doubleTemperature)
     $queueTemperature5DayPeriod.Enqueue($doubleTemperature)
     $queueTemperature7DayPeriod.Enqueue($doubleTemperature)
+    $queueTemperature10DayPeriod.Enqueue($doubleTemperature)
+    $queueTemperature14DayPeriod.Enqueue($doubleTemperature)
 
     # Update the 24-hour period statistics
     if ($queueGHI24HourPeriod.Count -eq 24) {
@@ -390,6 +412,42 @@ $listPSObjectNSRDBData | Sort-Object -Property DateTime | ForEach-Object {
         }
     }
 
+    # Update the 10-day period statistics
+    if ($queueGHI10DayPeriod.Count -eq 240) {
+        $intSumGHI10DayPeriod = $queueGHI10DayPeriod | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+
+        if ($intSumGHI10DayPeriod -lt $intMinGHI10DayPeriod) {
+            $intMinGHI10DayPeriod = $intSumGHI10DayPeriod
+            $datetimeMinGHI10DayPeriod = $datetimeCurrent
+        }
+    }
+    if ($queueTemperature10DayPeriod.Count -eq 240) {
+        $doubleAverageTemperature10DayPeriod = $queueTemperature10DayPeriod | Measure-Object -Average | Select-Object -ExpandProperty Average
+
+        if ($doubleAverageTemperature10DayPeriod -lt $doubleMinAverageTemperature10DayPeriod) {
+            $doubleMinAverageTemperature10DayPeriod = $doubleAverageTemperature10DayPeriod
+            $datetimeMinAverageTemperature10DayPeriod = $datetimeCurrent
+        }
+    }
+
+    # Update the 14-day period statistics
+    if ($queueGHI14DayPeriod.Count -eq 336) {
+        $intSumGHI14DayPeriod = $queueGHI14DayPeriod | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+
+        if ($intSumGHI14DayPeriod -lt $intMinGHI14DayPeriod) {
+            $intMinGHI14DayPeriod = $intSumGHI14DayPeriod
+            $datetimeMinGHI14DayPeriod = $datetimeCurrent
+        }
+    }
+    if ($queueTemperature14DayPeriod.Count -eq 336) {
+        $doubleAverageTemperature14DayPeriod = $queueTemperature14DayPeriod | Measure-Object -Average | Select-Object -ExpandProperty Average
+
+        if ($doubleAverageTemperature14DayPeriod -lt $doubleMinAverageTemperature14DayPeriod) {
+            $doubleMinAverageTemperature14DayPeriod = $doubleAverageTemperature14DayPeriod
+            $datetimeMinAverageTemperature14DayPeriod = $datetimeCurrent
+        }
+    }
+
     # Pop the oldest data from the stacks
     if ($queueGHI24HourPeriod.Count -eq 24) {
         [void]($queueGHI24HourPeriod.Dequeue())
@@ -403,6 +461,12 @@ $listPSObjectNSRDBData | Sort-Object -Property DateTime | ForEach-Object {
     if ($queueGHI7DayPeriod.Count -eq 168) {
         [void]($queueGHI7DayPeriod.Dequeue())
     }
+    if ($queueGHI10DayPeriod.Count -eq 240) {
+        [void]($queueGHI10DayPeriod.Dequeue())
+    }
+    if ($queueGHI14DayPeriod.Count -eq 336) {
+        [void]($queueGHI14DayPeriod.Dequeue())
+    }
     if ($queueTemperature24HourPeriod.Count -eq 24) {
         [void]($queueTemperature24HourPeriod.Dequeue())
     }
@@ -414,6 +478,12 @@ $listPSObjectNSRDBData | Sort-Object -Property DateTime | ForEach-Object {
     }
     if ($queueTemperature7DayPeriod.Count -eq 168) {
         [void]($queueTemperature7DayPeriod.Dequeue())
+    }
+    if ($queueTemperature10DayPeriod.Count -eq 240) {
+        [void]($queueTemperature10DayPeriod.Dequeue())
+    }
+    if ($queueTemperature14DayPeriod.Count -eq 336) {
+        [void]($queueTemperature14DayPeriod.Dequeue())
     }
 
     #region Post-Loop Progress Reporting ###########################################
@@ -446,6 +516,14 @@ $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarP
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours7DayPeriod' -Value ([double]($intMinGHI7DayPeriod / 7 / 1000))
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration7DayPeriod' -Value $datetimeMinGHI7DayPeriod
 
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarPowerGeneration10DayPeriod' -Value $intMinGHI10DayPeriod
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours10DayPeriod' -Value ([double]($intMinGHI10DayPeriod / 10 / 1000))
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration10DayPeriod' -Value $datetimeMinGHI10DayPeriod
+
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseSolarPowerGeneration14DayPeriod' -Value $intMinGHI14DayPeriod
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCasePeakSolarHours14DayPeriod' -Value ([double]($intMinGHI14DayPeriod / 14 / 1000))
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseSolarPowerGeneration14DayPeriod' -Value $datetimeMinGHI14DayPeriod
+
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseAverageTemperature24HourPeriod' -Value $doubleMinAverageTemperature24HourPeriod
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseAverageTemperature24HourPeriod' -Value $datetimeMinAverageTemperature24HourPeriod
 
@@ -457,5 +535,11 @@ $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCa
 
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseAverageTemperature7DayPeriod' -Value $doubleMinAverageTemperature7DayPeriod
 $psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseAverageTemperature7DayPeriod' -Value $datetimeMinAverageTemperature7DayPeriod
+
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseAverageTemperature10DayPeriod' -Value $doubleMinAverageTemperature10DayPeriod
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseAverageTemperature10DayPeriod' -Value $datetimeMinAverageTemperature10DayPeriod
+
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'WorstCaseAverageTemperature14DayPeriod' -Value $doubleMinAverageTemperature14DayPeriod
+$psobjectSolarStats | Add-Member -MemberType NoteProperty -Name 'DateTimeWorstCaseAverageTemperature14DayPeriod' -Value $datetimeMinAverageTemperature14DayPeriod
 
 return $psobjectSolarStats

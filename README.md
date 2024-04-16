@@ -51,6 +51,12 @@ DateTimeWorstCaseSolarPowerGeneration5DayPeriod   : 12/26/2009 7:30:00 PM
 WorstCaseSolarPowerGeneration7DayPeriod           : 2763
 WorstCasePeakSolarHours7DayPeriod                 : 0.394714285714286
 DateTimeWorstCaseSolarPowerGeneration7DayPeriod   : 12/27/2009 5:30:00 PM
+WorstCaseSolarPowerGeneration10DayPeriod          : 4485
+WorstCasePeakSolarHours10DayPeriod                : 0.4485
+DateTimeWorstCaseSolarPowerGeneration10DayPeriod  : 12/27/2009 5:30:00 PM
+WorstCaseSolarPowerGeneration14DayPeriod          : 9076
+WorstCasePeakSolarHours14DayPeriod                : 0.648285714285714
+DateTimeWorstCaseSolarPowerGeneration14DayPeriod  : 12/31/2009 9:30:00 PM
 WorstCaseAverageTemperature24HourPeriod           : -27.2458333333333
 DateTimeWorstCaseAverageTemperature24HourPeriod   : 1/31/2019 11:30:00 AM
 WorstCaseAverageTemperature3DayPeriod             : -21.9930555555556
@@ -59,6 +65,10 @@ WorstCaseAverageTemperature5DayPeriod             : -17.3941666666667
 DateTimeWorstCaseAverageTemperature5DayPeriod     : 2/1/2019 6:30:00 AM
 WorstCaseAverageTemperature7DayPeriod             : -16.7839285714286
 DateTimeWorstCaseAverageTemperature7DayPeriod     : 2/1/2019 5:30:00 AM
+WorstCaseAverageTemperature10DayPeriod            : -14.3583333333333
+DateTimeWorstCaseAverageTemperature10DayPeriod    : 2/2/2019 2:30:00 PM
+WorstCaseAverageTemperature14DayPeriod            : -12.8443452380952
+DateTimeWorstCaseAverageTemperature14DayPeriod    : 1/7/2018 3:30:00 PM
 ```
 
 - The `WorstCaseSolarPowerGeneration` stats are reported in watts per meter squared (W/m^2)
@@ -104,6 +114,12 @@ DateTimeWorstCaseSolarPowerGeneration5DayPeriod   : 11/22/2024 4:30:00 PM
 WorstCaseSolarPowerGeneration7DayPeriod           : 6485
 WorstCasePeakSolarHours7DayPeriod                 : 0.926428571428571
 DateTimeWorstCaseSolarPowerGeneration7DayPeriod   : 11/22/2024 9:30:00 PM
+WorstCaseSolarPowerGeneration10DayPeriod          : 10944
+WorstCasePeakSolarHours10DayPeriod                : 1.0944
+DateTimeWorstCaseSolarPowerGeneration10DayPeriod  : 1/15/2024 9:30:00 PM
+WorstCaseSolarPowerGeneration14DayPeriod          : 15420
+WorstCasePeakSolarHours14DayPeriod                : 1.10142857142857
+DateTimeWorstCaseSolarPowerGeneration14DayPeriod  : 12/19/2024 8:30:00 PM
 WorstCaseAverageTemperature24HourPeriod           : -27.2458333333333
 DateTimeWorstCaseAverageTemperature24HourPeriod   : 1/31/2024 11:30:00 AM
 WorstCaseAverageTemperature3DayPeriod             : -21.5986111111111
@@ -112,6 +128,10 @@ WorstCaseAverageTemperature5DayPeriod             : -17.155
 DateTimeWorstCaseAverageTemperature5DayPeriod     : 1/31/2024 11:30:00 PM
 WorstCaseAverageTemperature7DayPeriod             : -16.6482142857143
 DateTimeWorstCaseAverageTemperature7DayPeriod     : 1/31/2024 11:30:00 PM
+WorstCaseAverageTemperature10DayPeriod            : -13.2875
+DateTimeWorstCaseAverageTemperature10DayPeriod    : 1/31/2024 11:30:00 PM
+WorstCaseAverageTemperature14DayPeriod            : -11.1833333333333
+DateTimeWorstCaseAverageTemperature14DayPeriod    : 1/31/2024 11:30:00 PM
 ```
 
 Note the inclusion of the `-IgnoreYearSpecifiedInNSRDBData` parameter in the command.
